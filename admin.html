@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ha">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Royal Kilishi — Owner Dashboard</title>
+<style>
+:root{--gold:#d9ad62;--bg:#100d0a;--panel:#21180f;--muted:#c9bda9;--line:#604a2d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font:16px system-ui,Arial,sans-serif}
+header{padding:20px;background:#17110b;border-bottom:1px solid var(--line);color:var(--gold)}
+main{max-width:900px;margin:auto;padding:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0}
+h1,h2{color:var(--gold)}label{display:block;margin:10px 0 5px;color:var(--muted)}
+input,select,textarea,button{width:100%;padding:12px;border-radius:9px;border:1px solid var(--line);font:inherit}
+input,select,textarea{background:#100d0a;color:white}button{background:var(--gold);color:#17110b;font-weight:700;border:0;margin-top:10px}
+button.secondary{background:#45331d;color:white}button.danger{background:#8b3028;color:white}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.item{border-top:1px solid var(--line);padding:12px 0}
+.small{color:var(--muted);font-size:13px}.hidden{display:none}.status{color:var(--gold)}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h2>👑 ROYAL KILISHI</h2><div>Owner Dashboard</div></header>
+<main>
+<div class="card"><p class="small">Shafin gudanarwa ne na mai gidan kasuwanci. Ka shiga da email da password na Supabase Auth.</p>
+<div id="login">
+<label>Email</label><input id="email" type="email" autocomplete="username" placeholder="Email ɗinka">
+<label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password">
+<button id="loginBtn">Shiga Dashboard</button>
+</div>
+<div id="app" class="hidden">
+<p class="status" id="welcome">An shiga.</p><button class="secondary" id="logoutBtn">Fita (Logout)</button>
+<section class="card">
+<h2>Ƙara / Gyara Kaya</h2>
+<input id="pid" type="hidden">
+<label>Sunan kaya</label><input id="pname" placeholder="Misali: Kilishi">
+<label>Nau'in kaya</label><select id="pcat"><option value="Kilishi">Kilishi</option><option value="Danbun Nama">Danbun Nama</option></select>
+<label>Farashi (₦)</label><input id="price" type="number" min="1" step="1" placeholder="1000">
+<label>Bayanin kaya</label><textarea id="desc" rows="2" placeholder="Ƙarin bayani"></textarea>
+<label>URL hoton kaya (za mu ƙara upload daga waya daga baya)</label><input id="img" type="url" placeholder="https://...">
+<label><input id="active" type="checkbox" checked style="width:auto"> Ana sayar da shi yanzu</label>
+<button id="saveProduct">Ajiye Kaya</button><button class="secondary" id="clearProduct">Share fom</button>
+<div id="products"></div>
+</section>
+<section class="card"><h2>Odar Customers</h2><button id="refreshOrders" class="secondary">Sabunta odar</button><div id="orders"></div></section>
+</div>
+<p id="msg" class="small"></p>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://mvxrvabmkvdksgwavjue.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+const OWNER_UID = "af205a8b-2208-4425-ac18-5baeac3f3e5a";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const $ = id => document.getElementById(id);
+const msg = t => $("msg").textContent = t;
+function safe(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function checkSession(){
+ const {data:{session}}=await db.auth.getSession();
+ if(session && session.user.id===OWNER_UID){$("login").classList.add("hidden");$("app").classList.remove("hidden");$("welcome").textContent="Barka da zuwa, mai gida.";loadProducts();loadOrders();}
+ else if(session){await db.auth.signOut();msg("Wannan account ba shi da izinin mai gida.");}
+}
+$("loginBtn").onclick=async()=>{
+ msg("Ana shiga...");
+ const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+ if(error){msg("An kasa shiga: "+error.message);return;}
+ if(data.user.id!==OWNER_UID){await db.auth.signOut();msg("Wannan account ba shi da izinin mai gida.");return;}
+ $("login").classList.add("hidden");$("app").classList.remove("hidden");msg("");loadProducts();loadOrders();
+};
+$("logoutBtn").onclick=async()=>{await db.auth.signOut();location.reload();};
+function clearForm(){["pid","pname","price","desc","img"].forEach(x=>$(x).value="");$("pcat").value="Kilishi";$("active").checked=true;}
+$("clearProduct").onclick=clearForm;
+$("saveProduct").onclick=async()=>{
+ const name=$("pname").value.trim(), price=Number($("price").value);
+ if(!name||!Number.isInteger(price)||price<1){msg("Shigar da sunan kaya da farashi mai kyau.");return;}
+ const row={name,category:$("pcat").value,price,description:$("desc").value.trim()||null,image_url:$("img").value.trim()||null,active:$("active").checked};
+ msg("Ana ajiye kaya...");
+ let result;
+ if($("pid").value) result=await db.from("products").update(row).eq("id",$("pid").value);
+ else result=await db.from("products").insert(row);
+ if(result.error){msg("Kuskure: "+result.error.message);return;}
+ msg("An ajiye kaya.");clearForm();loadProducts();
+};
+async function loadProducts(){
+ const {data,error}=await db.from("products").select("*").order("created_at",{ascending:false});
+ if(error){$("products").textContent="Kuskure wajen kawo kaya: "+error.message;return;}
+ $("products").innerHTML="<h3>Kayan da ke cikin shago</h3>"+(data||[]).map(p=>`<div class="item"><b>${safe(p.name)}</b> — ₦${Number(p.price).toLocaleString("en-NG")}<div class="small">${safe(p.category)} · ${p.active?"Ana sayarwa":"Ba a sayarwa yanzu"}</div><button class="secondary" onclick="editProduct('${p.id}')">Gyara</button> <button class="danger" onclick="deleteProduct('${p.id}')">Goge</button></div>`).join("")||"Babu kaya tukuna.";
+ window._products=data||[];
+}
+window.editProduct=id=>{const p=window._products.find(x=>x.id===id);if(!p)return;$("pid").value=p.id;$("pname").value=p.name;$("pcat").value=p.category;$("price").value=p.price;$("desc").value=p.description||"";$("img").value=p.image_url||"";$("active").checked=!!p.active;window.scrollTo({top:0,behavior:"smooth"});};
+window.deleteProduct=async id=>{if(!confirm("Ka tabbatar kana son goge wannan kaya?"))return;const {error}=await db.from("products").delete().eq("id",id);msg(error?"Kuskure: "+error.message:"An goge kaya.");loadProducts();};
+async function loadOrders(){
+ const {data,error}=await db.from("orders").select("*").order("created_at",{ascending:false}).limit(100);
+ if(error){$("orders").textContent="Kuskure wajen kawo oda: "+error.message;return;}
+ $("orders").innerHTML=(data||[]).map(o=>`<div class="item"><b>${safe(o.customer_name)}</b><div class="small">${safe(o.phone)} · ${safe(o.address)}</div><p>${safe(JSON.stringify(o.items))}</p><b>Jimilla: ₦${Number(o.total).toLocaleString("en-NG")}</b><div class="small">Biya: ${safe(o.payment_method||"Ba a bayyana ba")} · ${safe(o.created_at)}</div><label>Matsayin oda</label><select id="st-${o.id}"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select><button class="secondary" onclick="updateOrder('${o.id}')">Ajiye matsayi</button></div>`).join("")||"Babu oda tukuna.";
+ (data||[]).forEach(o=>{const s=$("st-"+o.id);if(s)s.value=o.status||"pending";});
+}
+window.updateOrder=async id=>{const status=$("st-"+id).value;const {error}=await db.from("orders").update({status}).eq("id",id);msg(error?"Kuskure: "+error.message:"An sabunta matsayin oda.");};
+$("refreshOrders").onclick=loadOrders;
+checkSession();
+</script>
+</body></html>
