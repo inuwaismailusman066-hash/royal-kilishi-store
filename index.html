@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17110d">
+<title>Royal Kilishi & Dan Bun Nama</title>
+<style>
+:root{--bg:#100d0a;--panel:#1c1712;--gold:#d9ad62;--cream:#fff4df;--muted:#c5b8a5;--line:#443628}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--cream);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#100d0af2;border-bottom:1px solid var(--line);padding:13px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:900;letter-spacing:1px;color:var(--gold);font-size:18px}.brand small{display:block;color:var(--cream);font-size:10px;letter-spacing:2px}
+button,.btn{border:0;border-radius:12px;background:var(--gold);color:#1b1208;font-weight:800;padding:12px 16px;cursor:pointer;text-decoration:none;display:inline-block}
+button.secondary{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+.hero{padding:55px 6% 45px;text-align:center;background:radial-gradient(ellipse at top,#493018 0%,#1b130d 48%,#100d0a 80%)}
+.crown{font-size:34px;color:var(--gold)}h1{font-size:clamp(32px,8vw,58px);line-height:1.05;margin:10px auto;color:var(--gold);max-width:850px}
+.hero p{color:var(--muted);max-width:570px;margin:14px auto 24px;line-height:1.7}
+.pill{display:inline-block;border:1px solid #8d6b3c;border-radius:99px;padding:6px 12px;color:var(--gold);font-size:12px;letter-spacing:1px}
+main{max-width:1050px;margin:auto;padding:32px 5% 70px}.section-title{text-align:center;margin:10px 0 24px}.section-title h2{color:var(--gold);margin-bottom:5px}.section-title p{color:var(--muted);margin-top:0}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.food-art{height:165px;display:grid;place-items:center;background:linear-gradient(135deg,#49321d,#21160e);font-size:64px}
+.card-content{padding:18px}.card h3{margin:0 0 7px;color:var(--gold);font-size:21px}.card p{color:var(--muted);line-height:1.5;min-height:45px}.price{font-size:24px;font-weight:900;margin:12px 0;color:var(--cream)}
+.order-panel{margin-top:30px;padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+label{display:block;color:var(--muted);font-size:14px;margin:12px 0 6px}input,select,textarea{width:100%;padding:13px;border-radius:10px;border:1px solid var(--line);background:#100d0a;color:var(--cream);font:inherit}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.cart-line{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:10px 0;color:var(--muted)}
+footer{text-align:center;padding:25px;color:var(--muted);border-top:1px solid var(--line);font-size:13px}
+.notice{font-size:12px;color:var(--muted);line-height:1.5}.top-actions{display:flex;gap:8px;align-items:center}
+@media(max-width:480px){header{padding:12px 4%}.brand{font-size:15px}.hero{padding:42px 5%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">♛ ROYAL <small>KILISHI & DAN BUN NAMA</small></div>
+  <div class="top-actions"><button class="secondary" id="langBtn" onclick="toggleLang()">English</button><a class="btn" href="#order" id="navOrder">Yi Oda</a></div>
+</header>
+<section class="hero">
+  <div class="crown">♛</div><span class="pill" id="tagline">DANDANO NA MUSAMMAN</span>
+  <h1 id="heroTitle">Dandanon Royal, a kawo maka gida</h1>
+  <p id="heroText">Barka da zuwa Royal Kilishi and Dan Bun Nama. Zaɓi abin da kake so, ka saka kuɗin da kake son saya, sannan ka turo mana odarka ta WhatsApp.</p>
+  <a class="btn" href="#products" id="shopBtn">Duba Kaya</a>
+</section>
+<main>
+  <section id="products">
+    <div class="section-title"><h2 id="productsTitle">Kayayyakinmu</h2><p id="productsSub">Ba a sayar da awo. Kai ne za ka zaɓi adadin kuɗin sayayya.</p></div>
+    <div class="products">
+      <article class="card">
+        <div class="food-art" aria-label="Kilishi">🥩</div>
+        <div class="card-content"><h3>Royal Kilishi</h3><p id="kilishiDesc">Kilishi mai daɗi. Farashi daga ₦1,000 zuwa sama.</p><div class="price">₦1,000+</div><button onclick="chooseProduct('Kilishi',1000)" id="kilishiBtn">Zaɓi Kilishi</button></div>
+      </article>
+      <article class="card">
+        <div class="food-art" aria-label="Danbun nama">🍖</div>
+        <div class="card-content"><h3>Royal Danbun Nama</h3><p id="dambuDesc">Danbun nama mai daɗi. Farashi daga ₦3,000 zuwa sama.</p><div class="price">₦3,000+</div><button onclick="chooseProduct('Danbun Nama',3000)" id="dambuBtn">Zaɓi Danbun Nama</button></div>
+      </article>
+    </div>
+  </section>
+  <section class="order-panel" id="order">
+    <div class="section-title"><h2 id="orderTitle">Yi Odarka</h2><p id="orderSub">Cika bayanan da ke ƙasa domin tura odarka.</p></div>
+    <div class="grid">
+      <div><label for="product" id="productLabel">Kaya</label><select id="product" onchange="updateMinimum()"><option value="Kilishi">Kilishi</option><option value="Danbun Nama">Danbun Nama</option></select></div>
+      <div><label for="amount" id="amountLabel">Nawa kake son saya? (₦)</label><input id="amount" type="number" min="1000" step="500" value="1000" inputmode="numeric"></div>
+    </div>
+    <div class="grid">
+      <div><label for="customer" id="customerLabel">Sunanka</label><input id="customer" placeholder="Sunan customer"></div>
+      <div><label for="phone" id="phoneLabel">Lambar wayarka</label><input id="phone" type="tel" placeholder="080..."></div>
+    </div>
+    <label for="address" id="addressLabel">Adireshin delivery a Nigeria</label><textarea id="address" rows="2" placeholder="Jiha, gari, unguwa da cikakken adireshi"></textarea>
+    <label for="payment" id="paymentLabel">Hanyar biyan kuɗi</label><select id="payment"><option>Bank Transfer</option><option>Online payment (a tabbatar daga baya)</option></select>
+    <button style="width:100%;margin-top:16px" onclick="sendOrder()" id="sendBtn">Tura Oda ta WhatsApp</button>
+    <p class="notice" id="orderNote">Za a buɗe WhatsApp domin ka tabbatar da odarka. Ba a haɗa online payment kai tsaye ba tukuna; kada ka tura kuɗi sai an tabbatar maka da bayanan biyan kuɗi.</p>
+  </section>
+</main>
+<footer>© <span id="year"></span> Royal Kilishi and Dan Bun Nama · Nigeria</footer>
+<script>
+const WA="2349034996833";let lang="ha";
+document.getElementById("year").textContent=new Date().getFullYear();
+function chooseProduct(name,min){document.getElementById("product").value=name;document.getElementById("amount").value=min;updateMinimum();document.getElementById("order").scrollIntoView({behavior:"smooth"});}
+function updateMinimum(){const p=document.getElementById("product").value;document.getElementById("amount").min=p==="Kilishi"?1000:3000;document.getElementById("amount").value=p==="Kilishi"?1000:3000;}
+function sendOrder(){
+ const p=document.getElementById("product").value, min=p==="Kilishi"?1000:3000, amount=Number(document.getElementById("amount").value);
+ const name=document.getElementById("customer").value.trim(), phone=document.getElementById("phone").value.trim(), address=document.getElementById("address").value.trim(), payment=document.getElementById("payment").value;
+ if(!name||!phone||!address||!Number.isFinite(amount)||amount<min){alert(lang==="ha"?"Da fatan ka cika bayanai kuma ka saka adadin da ya kai mafi ƙarancin farashi.":"Please complete the details and enter at least the minimum amount.");return;}
+ const msg=`New order - Royal Kilishi and Dan Bun Nama%0AProduct: ${encodeURIComponent(p)}%0AAmount: ₦${amount.toLocaleString("en-NG")}%0ACustomer: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0ADelivery address: ${encodeURIComponent(address)}%0APayment: ${encodeURIComponent(payment)}`;
+ window.open(`https://wa.me/${WA}?text=${msg}`,"_blank");
+}
+function toggleLang(){
+ lang=lang==="ha"?"en":"ha";document.getElementById("langBtn").textContent=lang==="ha"?"English":"Hausa";
+ const t=lang==="ha"?{
+ tagline:"DANDANO NA MUSAMMAN",heroTitle:"Dandanon Royal, a kawo maka gida",heroText:"Barka da zuwa Royal Kilishi and Dan Bun Nama. Zaɓi abin da kake so, ka saka kuɗin da kake son saya, sannan ka turo mana odarka ta WhatsApp.",shopBtn:"Duba Kaya",navOrder:"Yi Oda",productsTitle:"Kayayyakinmu",productsSub:"Ba a sayar da awo. Kai ne za ka zaɓi adadin kuɗin sayayya.",kilishiDesc:"Kilishi mai daɗi. Farashi daga ₦1,000 zuwa sama.",dambuDesc:"Danbun nama mai daɗi. Farashi daga ₦3,000 zuwa sama.",kilishiBtn:"Zaɓi Kilishi",dambuBtn:"Zaɓi Danbun Nama",orderTitle:"Yi Odarka",orderSub:"Cika bayanan da ke ƙasa domin tura odarka.",productLabel:"Kaya",amountLabel:"Nawa kake son saya? (₦)",customerLabel:"Sunanka",phoneLabel:"Lambar wayarka",addressLabel:"Adireshin delivery a Nigeria",paymentLabel:"Hanyar biyan kuɗi",sendBtn:"Tura Oda ta WhatsApp",orderNote:"Za a buɗe WhatsApp domin ka tabbatar da odarka. Ba a haɗa online payment kai tsaye ba tukuna; kada ka tura kuɗi sai an tabbatar maka da bayanan biyan kuɗi."
+ }:{
+ tagline:"THE ROYAL TASTE",heroTitle:"The Royal Taste, Delivered to You",heroText:"Welcome to Royal Kilishi and Dan Bun Nama. Choose your product, enter the amount you want to spend, and send your order directly through WhatsApp.",shopBtn:"Shop Products",navOrder:"Order Now",productsTitle:"Our Products",productsSub:"We do not sell by weight. Choose the amount you want to spend.",kilishiDesc:"Delicious Kilishi. Prices start from ₦1,000 and above.",dambuDesc:"Delicious Danbun Nama. Prices start from ₦3,000 and above.",kilishiBtn:"Choose Kilishi",dambuBtn:"Choose Danbun Nama",orderTitle:"Place Your Order",orderSub:"Complete the details below to send your order.",productLabel:"Product",amountLabel:"How much would you like to spend? (₦)",customerLabel:"Your name",phoneLabel:"Your phone number",addressLabel:"Delivery address in Nigeria",paymentLabel:"Payment method",sendBtn:"Send Order on WhatsApp",orderNote:"WhatsApp will open so you can confirm your order. Direct online payment is not connected yet; do not send money until payment details are confirmed."
+ };
+ Object.keys(t).forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t[id];});
+}
+</script>
+</body></html>
